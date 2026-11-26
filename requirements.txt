@@ -1,0 +1,4 @@
+google-genai 
+httpx 
+pydantic 
+python-dotenv
