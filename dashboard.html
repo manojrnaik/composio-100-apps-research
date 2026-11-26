@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Composio 100-App Integration & MCP Research</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #263349;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #6366f1;
+      --green-bg: rgba(16, 185, 129, 0.15);
+      --green-text: #34d399;
+      --amber-bg: rgba(245, 158, 11, 0.15);
+      --amber-text: #fbbf24;
+      --red-bg: rgba(239, 68, 68, 0.15);
+      --red-text: #f87171;
+      --blue-bg: rgba(59, 130, 246, 0.15);
+      --blue-text: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 700; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; }
+    .actions { display: flex; gap: 10px; align-items: center; }
+    button, .file-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button.secondary { background: var(--surface); border: 1px solid var(--border); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:not(:disabled):hover, .file-btn:hover { opacity: 0.9; }
+    input[type="file"] { display: none; }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .kpi-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-value { font-size: 1.75rem; font-weight: 700; margin-top: 4px; }
+
+    /* Filters */
+    .filters {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 960px) { .filters { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 540px) { .filters { grid-template-columns: 1fr; } }
+    .filters input, .filters select {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.875rem;
+    }
+    .filters input:focus, .filters select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+    /* Table */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th {
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    th:hover { color: var(--text); }
+    tr:hover td { background: var(--surface-hover); }
+    .app-name { font-weight: 600; color: #fff; text-decoration: none; }
+    .app-name:hover { text-decoration: underline; color: var(--blue-text); }
+    .one-liner { color: var(--muted); font-size: 0.82rem; margin-top: 3px; max-width: 320px; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green-text); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-red { background: var(--red-bg); color: var(--red-text); }
+    .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
+    .tag {
+      display: inline-block;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      margin: 2px 3px 2px 0;
+    }
+    .notes-cell { max-width: 240px; font-size: 0.82rem; color: var(--muted); }
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--muted);
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .drop-zone.dragover { border-color: var(--accent); background: rgba(99, 102, 241, 0.08); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Composio App & MCP Research Explorer</h1>
+        <p class="subtitle" id="statusText">Load your data.json file to explore integration feasibility and MCP coverage.</p>
+      </div>
+      <div class="actions">
+        <label class="file-btn">
+          Load data.json
+          <input type="file" id="fileInput" accept=".json,application/json" />
+        </label>
+        <button class="secondary" id="exportBtn" disabled>Export Filtered CSV</button>
+      </div>
+    </header>
+
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card"><div class="kpi-label">Total Apps</div><div class="kpi-value" id="kpiTotal">0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Easy Wins</div><div class="kpi-value" style="color:var(--green-text)" id="kpiEasy">0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Moderate</div><div class="kpi-value" style="color:var(--amber-text)" id="kpiMod">0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Blocked / Gated</div><div class="kpi-value" style="color:var(--red-text)" id="kpiBlocked">0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Official MCPs</div><div class="kpi-value" style="color:var(--blue-text)" id="kpiMcp">0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Verified</div><div class="kpi-value" id="kpiVerified">0</div></div>
+    </div>
+
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Search app, description, blocker, or MCP notes..." />
+      <select id="categoryFilter"><option value="">All Categories</option></select>
+      <select id="buildableFilter"><option value="">All Buildability</option></select>
+      <select id="mcpFilter">
+        <option value="">Official MCP: All</option>
+        <option value="true">Has Official MCP</option>
+        <option value="false">No Official MCP</option>
+      </select>
+      <select id="verifyFilter">
+        <option value="">Verification: All</option>
+        <option value="VERIFIED">Verified Only</option>
+        <option value="REVIEW">Needs Manual Review</option>
+      </select>
+    </div>
+
+    <div id="emptyState" class="drop-zone">
+      <p style="font-size:1.1rem; color:var(--text); margin-bottom:8px;">Drop <strong>data.json</strong> here or click <strong>Load data.json</strong> above</p>
+      <p>Runs 100% locally in your browser — no server or internet required.</p>
+    </div>
+
+    <div class="table-wrap" id="tableWrap" style="display:none;">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="id"># ?</th>
+            <th data-sort="name">App & Summary ?</th>
+            <th data-sort="category">Category ?</th>
+            <th data-sort="buildable_today">Buildable ?</th>
+            <th data-sort="access_gate">Access Gate ?</th>
+            <th>Auth Methods</th>
+            <th data-sort="api_surface">API Surface ?</th>
+            <th data-sort="has_official_mcp">MCP ?</th>
+            <th data-sort="main_blocker">Blocker & MCP Notes ?</th>
+            <th data-sort="verification_status">Verification ?</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let allApps = [];
+    let filteredApps = [];
+    let sortKey = 'id';
+    let sortAsc = true;
+
+    const fileInput = document.getElementById('fileInput');
+    const emptyState = document.getElementById('emptyState');
+    const tableWrap = document.getElementById('tableWrap');
+    const tableBody = document.getElementById('tableBody');
+    const exportBtn = document.getElementById('exportBtn');
+    const statusText = document.getElementById('statusText');
+
+    function escapeHtml(val) {
+      if (val === null || val === undefined) return '';
+      return String(val)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function getAuthMethods(app) {
+      if (Array.isArray(app.auth_methods)) return app.auth_methods;
+      if (typeof app.auth_methods === 'string') {
+        return app.auth_methods.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      return [];
+    }
+
+    function getBuildableBadge(status) {
+      const s = String(status || '').toLowerCase();
+      if (s.includes('easy')) return 'badge-green';
+      if (s.includes('moderate') || s.includes('conditional') || s.includes('partial')) return 'badge-amber';
+      if (s.includes('block') || s.includes('no') || s.includes('gated')) return 'badge-red';
+      return 'badge-blue';
+    }
+
+    function getGateBadge(gate) {
+      const g = String(gate || '').toLowerCase();
+      if (g.includes('self-serve') || g.includes('free')) return 'badge-green';
+      if (g.includes('trial') || g.includes('paid')) return 'badge-amber';
+      return 'badge-red';
+    }
+
+    function loadData(data) {
+      let list = null;
+      if (Array.isArray(data)) {
+        list = data;
+      } else if (data && typeof data === 'object') {
+        const firstArrayKey = Object.keys(data).find(k => Array.isArray(data[k]));
+        if (firstArrayKey) list = data[firstArrayKey];
+      }
+
+      if (!list) {
+        alert('Invalid JSON format: Expected an array of app objects.');
+        return;
+      }
+
+      allApps = list;
+      populateFilters();
+      updateKPIs();
+      emptyState.style.display = 'none';
+      tableWrap.style.display = 'block';
+      exportBtn.disabled = false;
+      applyFilters();
+    }
+    function populateFilters() {
+      const fillSelect = (id, defaultText, values) => {
+        const select = document.getElementById(id);
+        select.innerHTML = `<option value="">${defaultText}</option>`;
+        [...new Set(values.filter(Boolean))].sort().forEach(val => {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          select.appendChild(opt);
+        });
+      };
+      fillSelect('categoryFilter', 'All Categories', allApps.map(a => a.category));
+      fillSelect('buildableFilter', 'All Buildability', allApps.map(a => a.buildable_today));
+    }
+
+    function updateKPIs() {
+      const total = allApps.length;
+      const easy = allApps.filter(a => String(a.buildable_today || '').toLowerCase().includes('easy')).length;
+      const mod = allApps.filter(a => String(a.buildable_today || '').toLowerCase().includes('moderate')).length;
+      const blocked = allApps.filter(a => {
+        const s = String(a.buildable_today || '').toLowerCase();
+        return s.includes('block') || s.startsWith('no');
+      }).length;
+      const mcp = allApps.filter(a => Boolean(a.has_official_mcp)).length;
+      const verified = allApps.filter(a => String(a.verification_status || '').startsWith('VERIFIED')).length;
+
+      document.getElementById('kpiTotal').textContent = total;
+      document.getElementById('kpiEasy').textContent = easy;
+      document.getElementById('kpiMod').textContent = mod;
+      document.getElementById('kpiBlocked').textContent = blocked;
+      document.getElementById('kpiMcp').textContent = mcp;
+      document.getElementById('kpiVerified').textContent = `${verified}/${total}`;
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cat = document.getElementById('categoryFilter').value;
+      const build = document.getElementById('buildableFilter').value;
+      const mcp = document.getElementById('mcpFilter').value;
+      const verify = document.getElementById('verifyFilter').value;
+
+      filteredApps = allApps.filter(app => {
+        if (cat && app.category !== cat) return false;
+        if (build && app.buildable_today !== build) return false;
+        if (mcp === 'true' && !app.has_official_mcp) return false;
+        if (mcp === 'false' && app.has_official_mcp) return false;
+        const isVerified = String(app.verification_status || '').startsWith('VERIFIED');
+        if (verify === 'VERIFIED' && !isVerified) return false;
+        if (verify === 'REVIEW' && isVerified) return false;
+        if (query) {
+          const blob = [
+            app.name, app.category, app.description, app.one_liner,
+            app.api_surface, app.main_blocker, app.mcp_notes,
+            getAuthMethods(app).join(' ')
+          ].join(' ').toLowerCase();
+          if (!blob.includes(query)) return false;
+        }
+        return true;
+      });
+
+      filteredApps.sort((a, b) => {
+        let va = a[sortKey] ?? '';
+        let vb = b[sortKey] ?? '';
+        if (typeof va === 'number' && typeof vb === 'number') {
+          return sortAsc ? va - vb : vb - va;
+        }
+        return sortAsc
+          ? String(va).localeCompare(String(vb), undefined, { numeric: true })
+          : String(vb).localeCompare(String(va), undefined, { numeric: true });
+      });
+
+      statusText.textContent = `Showing ${filteredApps.length} of ${allApps.length} apps`;
+      renderTable();
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = filteredApps.map(app => {
+        const desc = app.one_liner || app.description || '';
+        const authTags = getAuthMethods(app)
+          .map(m => `<span class="tag">${escapeHtml(m)}</span>`)
+          .join('');
+        const isVerified = String(app.verification_status || '').startsWith('VERIFIED');
+        const notes = [
+          app.main_blocker && app.main_blocker !== 'None' ? `<div><strong>Blocker:</strong> ${escapeHtml(app.main_blocker)}</div>` : '',
+          app.mcp_notes ? `<div><strong>MCP:</strong> ${escapeHtml(app.mcp_notes)}</div>` : ''
+        ].filter(Boolean).join('') || '-';
+
+        const appLink = app.evidence_url
+          ? `<a class="app-name" href="${escapeHtml(app.evidence_url)}" target="_blank" rel="noopener">${escapeHtml(app.name)} ?</a>`
+          : `<span class="app-name">${escapeHtml(app.name)}</span>`;
+
+        return `
+          <tr>
+            <td>${escapeHtml(app.id ?? '-')}</td>
+            <td>${appLink}${desc ? `<div class="one-liner">${escapeHtml(desc)}</div>` : ''}</td>
+            <td>${escapeHtml(app.category || '-')}</td>
+            <td><span class="badge ${getBuildableBadge(app.buildable_today)}">${escapeHtml(app.buildable_today || '-')}</span></td>
+            <td><span class="badge ${getGateBadge(app.access_gate)}">${escapeHtml(app.access_gate || '-')}</span></td>
+            <td>${authTags || '-'}</td>
+            <td>${escapeHtml(app.api_surface || '-')}</td>
+            <td><span class="badge ${app.has_official_mcp ? 'badge-blue' : ''}">${app.has_official_mcp ? 'Yes' : 'No'}</span></td>
+            <td class="notes-cell">${notes}</td>
+            <td><span class="badge ${isVerified ? 'badge-green' : 'badge-amber'}">${escapeHtml(app.verification_status || 'Unverified')}</span></td>
+          </tr>`;
+      }).join('');
+    }
+    function exportCSV() {
+      if (!filteredApps.length) return;
+      const headers = [
+        'id', 'name', 'category', 'one_liner', 'buildable_today',
+        'access_gate', 'auth_methods', 'api_surface', 'has_official_mcp',
+        'mcp_notes', 'main_blocker', 'verification_status', 'evidence_url'
+      ];
+      const rows = [
+        headers.join(','),
+        ...filteredApps.map(app => headers.map(h => {
+          let val = h === 'one_liner' ? (app.one_liner || app.description || '') : app[h];
+          if (Array.isArray(val)) val = val.join('; ');
+          return `"${String(val ?? '').replace(/"/g, '""')}"`;
+        }).join(','))
+      ];
+      const blob = new Blob(['\uFEFF' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'composio_100_apps_filtered.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          loadData(JSON.parse(ev.target.result));
+        } catch (err) {
+          alert('Failed to parse JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Event Listeners
+    fileInput.addEventListener('change', e => {
+      handleFile(e.target.files[0]);
+      e.target.value = '';
+    });
+
+    emptyState.addEventListener('click', () => fileInput.click());
+
+    ['dragover', 'dragleave', 'drop'].forEach(evtName => {
+      emptyState.addEventListener(evtName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        emptyState.classList.toggle('dragover', evtName === 'dragover');
+        if (evtName === 'drop' && e.dataTransfer.files[0]) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+    });
+
+    ['searchInput', 'categoryFilter', 'buildableFilter', 'mcpFilter', 'verifyFilter']
+      .forEach(id => document.getElementById(id).addEventListener('input', applyFilters));
+
+    exportBtn.addEventListener('click', exportCSV);
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (sortKey === key) sortAsc = !sortAsc;
+        else { sortKey = key; sortAsc = true; }
+        applyFilters();
+      });
+    });
+  </script>
+</body>
+</html>

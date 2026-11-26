@@ -1,0 +1,76 @@
+[
+  {
+    "id": 1,
+    "name": "Salesforce",
+    "category": "CRM & Sales",
+    "one_liner": "Enterprise CRM platform providing comprehensive APIs for managing customer data, sales pipelines, and business workflows.",
+    "auth_methods": [
+      "OAuth2",
+      "Bearer Token"
+    ],
+    "access_gate": "Paid Plan Required",
+    "api_surface": "REST (Broad - 50+ endpoints)",
+    "has_official_mcp": false,
+    "mcp_notes": "No official Model Context Protocol server provided directly by Salesforce yet, though community integration options exist.",
+    "buildable_today": "Yes - Moderate",
+    "main_blocker": "Paid Plan Required",
+    "evidence_url": "https://developer.salesforce.com/docs/apis",
+    "confidence_score": 0.5,
+    "verification_status": "Flagged (Unreachable URL: ConnectError)"
+  },
+  {
+    "id": 10,
+    "name": "DealCloud",
+    "category": "CRM & Sales",
+    "one_liner": "DealCloud is a deal management and financial CRM platform tailored for private equity, venture capital, and investment banking firms.",
+    "auth_methods": [
+      "OAuth2",
+      "API Key"
+    ],
+    "access_gate": "Partner / Sales-Gated",
+    "api_surface": "REST (Broad - 50+ endpoints)",
+    "has_official_mcp": false,
+    "mcp_notes": "No official MCP server available. Integration requires building against the DealCloud REST API.",
+    "buildable_today": "Yes - Moderate",
+    "main_blocker": "Enterprise sales gate",
+    "evidence_url": "https://www.intapp.com/dealcloud/",
+    "confidence_score": 0.5,
+    "verification_status": "Flagged (Unreachable URL: ConnectError)"
+  },
+  {
+    "id": 58,
+    "name": "Sherlock",
+    "category": "Data, SEO & Scraping",
+    "one_liner": "Hunt down social media accounts by username across social networks.",
+    "auth_methods": [
+      "None/Local CLI"
+    ],
+    "access_gate": "Open Source / Local",
+    "api_surface": "CLI/SDK only",
+    "has_official_mcp": false,
+    "mcp_notes": "No official Model Context Protocol server exists, but it can be wrapped as a local tool via CLI execution.",
+    "buildable_today": "Yes - Easy Win",
+    "main_blocker": "None",
+    "evidence_url": "https://github.com/sherlock-project/sherlock",
+    "confidence_score": 1.0,
+    "verification_status": "VERIFIED"
+  },
+  {
+    "id": 91,
+    "name": "NotebookLM",
+    "category": "AI, Research & Media",
+    "one_liner": "An AI-powered research assistant and note-taking tool that synthesizes insights from user-provided documents.",
+    "auth_methods": [
+      "OAuth2"
+    ],
+    "access_gate": "Self-Serve (Free/Trial)",
+    "api_surface": "No Public API",
+    "has_official_mcp": false,
+    "mcp_notes": "No official MCP server available, as Google has not released a public API for NotebookLM.",
+    "buildable_today": "Blocked / Gated",
+    "main_blocker": "No public developer API available",
+    "evidence_url": "https://notebooklm.google.com",
+    "confidence_score": 0.95,
+    "verification_status": "DISCREPANCY: The visible page text does not contain any information regarding authentication methods (OAuth2), pricing/access gates (Self-Serve), or API availability."
+  }
+]
